@@ -1,18 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 
-public class Sensor
+public class Sensor : MonoBehaviour
 {
-    private Source.Type type;
-    private float slope;
-    private static float minStimulus = 0.1f;
+    public Source.Affinity affinity;
+    public float slope;
+    public bool crossed;
+    public static float minStimulus = 0.05f;
+    public static float scale = 5f;
+    public Vehicle holder = null;
 
-    public Sensor(Source.Type type, float slope)
+    void Start()
     {
-        this.type = type;
+        hideFlags = HideFlags.HideInHierarchy;
+    }
+
+    public void Setup(Source.Affinity affinity, float slope, bool crossed)
+    {
+        this.affinity = affinity;
         this.slope = slope;
+        this.crossed = crossed;
     }
 
     public float Sense(Vector2 pos)
@@ -20,20 +27,20 @@ public class Sensor
         float stimulus = 0f;
         foreach (Source source in SourcePool.instance.sources)
         {
-            if (source.type != this.type)
+            if (source.affinity != this.affinity || holder == source.holder)
             {
                 continue;
             } 
             float distance = Vector2.Distance(pos, (Vector2)source.transform.position);
-            stimulus += StimulusNorm(distance);
+            stimulus += stimulusNorm(distance);
         }
 
         return Math.Min(1f, Math.Max(minStimulus, stimulus));
     }
 
-    private float StimulusNorm(float distance)
+    private float stimulusNorm(float distance)
     {
-        float result = slope * distance / SourcePool.instance.scale;
+        float result = slope * distance / scale;
         if (slope < 0)
         {
             result += 1f;

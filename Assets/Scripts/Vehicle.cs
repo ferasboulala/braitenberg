@@ -1,86 +1,166 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEditor;
 
 public class Vehicle : MonoBehaviour
 {
-    private Sensor leftSensor;
-    private Sensor rightSensor;
-    private bool crossed;
-    public enum Behavior {FEAR, AGGRESSION, LOVE, EXPLORATION};
-    public Behavior behavior;
+    public GameObject[] sensors;
+    public Source.Affinity sourceAffinity;
+    private Source source;
+
+    public enum Behavior { FEAR, AGGRESSION, LOVE, EXPLORATION, RANDOM, CUSTOM };
+    public Behavior behavior = Behavior.CUSTOM;
+    public Source.Affinity affinity;
+
     private float radius;
     public float maxTranslationVelocity = 1f;
     public float maxAngularVelocity = 1f;
 
-    // Start is called before the first frame update
-    void Start()
+    private float angularRotation;
+    private float translationVelocity;
+
+    private void randomStartPosition()
     {
         radius = transform.localScale.x / 2f;
         transform.Rotate(new Vector3(0f, 0f, Random.Range(0f, 360f)));
-        behavior = (Behavior)Random.Range(0f, System.Enum.GetValues(typeof(Behavior)).Length);
+    }
+
+    private void selectBehavior()
+    {
+        if (behavior == Behavior.CUSTOM)
+        {
+            return;
+        }
+
+        if (behavior == Behavior.RANDOM)
+        {
+            behavior = (Behavior)Random.Range(0f, System.Enum.GetValues(typeof(Behavior)).Length - 2);
+        }
 
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        sensors = new GameObject[1];
+        sensors[0] = new GameObject();
+        Sensor sensor = sensors[0].AddComponent<Sensor>();
         switch (behavior)
         {
             case Behavior.FEAR:
-            leftSensor = new Sensor(Source.Type.Heat, -1f);
-            rightSensor = new Sensor(Source.Type.Heat, -1f);
-            crossed = false;
-            sr.color = Color.yellow;
-            break;
+                sensor.Setup(affinity, -1f, false);
+                sr.color = Color.yellow;
+                break;
 
             case Behavior.AGGRESSION:
-            leftSensor = new Sensor(Source.Type.Heat, -1f);
-            rightSensor = new Sensor(Source.Type.Heat, -1f);
-            crossed = true;
-            sr.color = Color.red;
-            break;
+                sensor.Setup(affinity, -1f, true);
+                sr.color = Color.red;
+                break;
 
             case Behavior.LOVE:
-            leftSensor = new Sensor(Source.Type.Heat, 1f);
-            rightSensor = new Sensor(Source.Type.Heat, 1f);
-            crossed = false;
-            sr.color = new Color(1f, 0.5f, 0.66f, 1f); // pink
-            break;
+                sensor.Setup(affinity, 1f, false);
+                sr.color = new Color(1f, 0.5f, 0.66f, 1f); // pink
+                break;
 
             case Behavior.EXPLORATION:
-            leftSensor = new Sensor(Source.Type.Heat, 1f);
-            rightSensor = new Sensor(Source.Type.Heat, 1f);
-            sr.color = Color.green;
-            crossed = true;
-            break;
+                sensor.Setup(affinity, 1f, true);
+                sr.color = Color.green;
+                break;
         }
     }
 
-    // Update is called once per frame
+    // Start is called before the first frame update
+    void Start()
+    {
+        hideFlags = HideFlags.HideInHierarchy;
+        randomStartPosition();
+        selectBehavior();
+
+        foreach (GameObject obj in sensors)
+        {
+            obj.GetComponent<Sensor>().holder = this;
+        }
+
+        if (sourceAffinity != Source.Affinity.None)
+        {
+            source = gameObject.AddComponent<Source>();
+            source.affinity = sourceAffinity;
+            source.holder = this;
+        }
+    }
+
     void Update()
     {
-        Vector2 normal = Vector2.Perpendicular(transform.up).normalized;
-        Vector2 leftSensorPosition = (Vector2)transform.position + normal * radius;
-        Vector2 rightSensorPosition = (Vector2)transform.position - normal * radius;
-
-        float leftVelocity = leftSensor.Sense(leftSensorPosition);
-        float rightVelocity = rightSensor.Sense(rightSensorPosition);
-
-        float translationVelocity = maxTranslationVelocity * (leftVelocity + rightVelocity) / 2f;
-        float angularRotation = maxAngularVelocity * (rightVelocity - leftVelocity) / radius / 2f;
-        if (crossed) {
-            angularRotation *= -1f;
-        }
-        angularRotation = Mathf.Rad2Deg * angularRotation;
-
-        transform.position += transform.up * Time.deltaTime * translationVelocity;
-        transform.Rotate(new Vector3(0f, 0f, angularRotation * Time.deltaTime));
+        Compute();
+        Execute(Time.deltaTime);
     }
 
-    void OnTriggerExit2D(Collider2D other)
+    public void Compute()
+    {
+        Vector2 normal = Vector2.Perpendicular(transform.up).normalized;
+        Vector2 leftSensorsPosition = (Vector2)transform.position + normal * radius;
+        Vector2 rightSensorsPosition = (Vector2)transform.position - normal * radius;
+
+        float leftVelocity = 0f;
+        float rightVelocity = 0f;
+
+        foreach (GameObject obj in sensors)
+        {
+            Sensor sensor = obj.GetComponent<Sensor>();
+            float left = sensor.Sense(leftSensorsPosition);
+            float right = sensor.Sense(rightSensorsPosition);
+            if (sensor.crossed)
+            {
+                leftVelocity += right;
+                rightVelocity += left;
+            }
+            else
+            {
+                leftVelocity += left;
+                rightVelocity += right;
+            }
+        }
+
+        leftVelocity /= sensors.Length;
+        rightVelocity /= sensors.Length;
+
+        translationVelocity = maxTranslationVelocity * (leftVelocity + rightVelocity) / 2f;
+        angularRotation = maxAngularVelocity * (rightVelocity - leftVelocity) / radius / 2f;
+        angularRotation *= Mathf.Rad2Deg;
+    }
+
+    public void Execute(float deltaTime)
+    {
+        transform.position += transform.up * deltaTime * translationVelocity;
+        transform.Rotate(new Vector3(0f, 0f, angularRotation * deltaTime));
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.GetComponent<Vehicle>())
         {
             return;
         }
 
-        transform.Rotate(new Vector3(0f, 0f, 180));
+
+    }
+}
+
+[CustomEditor(typeof(Vehicle))]
+public class VehicleEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        Vehicle vehicle = target as Vehicle;
+        vehicle.behavior = (Vehicle.Behavior)EditorGUILayout.EnumPopup("Behavior:", vehicle.behavior);
+        vehicle.sourceAffinity = (Source.Affinity)EditorGUILayout.EnumPopup("Source Affinity:", vehicle.sourceAffinity);
+        vehicle.maxTranslationVelocity = EditorGUILayout.FloatField("Maximum Translation Velocity:", vehicle.maxTranslationVelocity);
+        vehicle.maxAngularVelocity = EditorGUILayout.FloatField("Maximum Angular Velocity:", vehicle.maxAngularVelocity);
+
+        if (vehicle.behavior == Vehicle.Behavior.CUSTOM)
+        {
+            serializedObject.Update();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("sensors"), true);
+            serializedObject.ApplyModifiedProperties();
+        }
+        else if (vehicle.behavior != Vehicle.Behavior.RANDOM)
+        {
+            vehicle.affinity = (Source.Affinity)EditorGUILayout.EnumPopup("Affinity:", vehicle.affinity);
+        }
     }
 }
