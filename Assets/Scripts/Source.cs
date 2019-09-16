@@ -3,6 +3,7 @@
 public class Source : MonoBehaviour
 {
     public enum Affinity {Heat, Pressure, Light, Sound, None};
+    public GameObject particles;
     public Affinity affinity;
     public Vehicle holder = null;
 
@@ -10,23 +11,36 @@ public class Source : MonoBehaviour
     {
         SourcePool.instance.Register(this);
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        Color color = Color.black;
         switch (affinity)
         {
             case Affinity.Heat:
-            sr.color = Color.red;
+            color = Color.red;
             break;
             case Affinity.Pressure:
-            sr.color = Color.magenta;
+            color = Color.magenta;
             break;
             case Affinity.Light:
-            sr.color = Color.yellow;
+            color = Color.yellow;
             break;
             case Affinity.Sound:
-            sr.color = Color.green;
+            color = Color.green;
             break;
             case Affinity.None:
-            sr.color = Color.gray;
+            color = Color.gray;
             break;
         }
+
+        sr.color = color;
+
+        if (particles == null)
+        {
+            particles = Resources.Load<GameObject>("SourceParticle");
+        }
+        GameObject obj = Instantiate(particles, transform.position, Quaternion.identity);
+        var main = obj.GetComponent<ParticleSystem>().main;
+        main.startColor = color;
+        obj.transform.parent = transform;
+        obj.transform.localScale = new Vector3(1f, 1f, 1f);
     }
 }

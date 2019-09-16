@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03af1375d6e34a34ab9386543a627f59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  affinity: 1
+  affinity: 3
   slope: -1
   crossed: 1
   holder: {fileID: 0}

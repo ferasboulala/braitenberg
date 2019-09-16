@@ -6,7 +6,7 @@ public class Sensor : MonoBehaviour
     public Source.Affinity affinity;
     public float slope;
     public bool crossed;
-    public static float minStimulus = 0.05f;
+    public static float minStimulus = 0f;
     public static float scale = 5f;
     public Vehicle holder = null;
 

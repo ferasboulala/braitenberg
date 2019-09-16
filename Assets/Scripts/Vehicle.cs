@@ -129,16 +129,6 @@ public class Vehicle : MonoBehaviour
         transform.position += transform.up * deltaTime * translationVelocity;
         transform.Rotate(new Vector3(0f, 0f, angularRotation * deltaTime));
     }
-
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.GetComponent<Vehicle>())
-        {
-            return;
-        }
-
-
-    }
 }
 
 [CustomEditor(typeof(Vehicle))]
