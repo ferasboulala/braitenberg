@@ -190,7 +190,7 @@ PrefabInstance:
     - target: {fileID: 6718983004327745848, guid: 771d523f7e57b2c42ba47427af9bd0b3,
         type: 3}
       propertyPath: affinity
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 771d523f7e57b2c42ba47427af9bd0b3, type: 3}
@@ -397,7 +397,7 @@ PrefabInstance:
     - target: {fileID: 5566919225612061023, guid: 771d523f7e57b2c42ba47427af9bd0b3,
         type: 3}
       propertyPath: m_Name
-      value: SourceSound (1)
+      value: SourceLight
       objectReference: {fileID: 0}
     - target: {fileID: 5561474317967129276, guid: 771d523f7e57b2c42ba47427af9bd0b3,
         type: 3}
@@ -457,7 +457,7 @@ PrefabInstance:
     - target: {fileID: 6718983004327745848, guid: 771d523f7e57b2c42ba47427af9bd0b3,
         type: 3}
       propertyPath: affinity
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 771d523f7e57b2c42ba47427af9bd0b3, type: 3}
@@ -610,29 +610,29 @@ PrefabInstance:
     - target: {fileID: 2580817076419603311, guid: 317ecff59300fc74ea6247621f9122f9,
         type: 3}
       propertyPath: vehicleTemplates.Array.size
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2580817076419603311, guid: 317ecff59300fc74ea6247621f9122f9,
         type: 3}
       propertyPath: vehicleTemplates.Array.data[1].prefab
       value: 
-      objectReference: {fileID: 9098964122442586666, guid: a3faed82865682549ad1d97c4bc4a5cf,
+      objectReference: {fileID: 1434993275981048464, guid: 0714dcadaf4f56740a7a890f5c8028a9,
         type: 3}
     - target: {fileID: 2580817076419603311, guid: 317ecff59300fc74ea6247621f9122f9,
         type: 3}
       propertyPath: vehicleTemplates.Array.data[1].n
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2580817076419603311, guid: 317ecff59300fc74ea6247621f9122f9,
         type: 3}
       propertyPath: vehicleTemplates.Array.data[2].prefab
       value: 
-      objectReference: {fileID: 6272782667913082913, guid: 1467e99c7bc6d334c9f571a4b5635a9f,
+      objectReference: {fileID: 1434993275981048464, guid: 7042de4b2570ffb489e3288615b6aa95,
         type: 3}
     - target: {fileID: 2580817076419603311, guid: 317ecff59300fc74ea6247621f9122f9,
         type: 3}
       propertyPath: vehicleTemplates.Array.data[2].n
-      value: 10
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2580817076419603311, guid: 317ecff59300fc74ea6247621f9122f9,
         type: 3}
@@ -659,13 +659,13 @@ PrefabInstance:
     - target: {fileID: 2580817076419603311, guid: 317ecff59300fc74ea6247621f9122f9,
         type: 3}
       propertyPath: vehicleTemplates.Array.data[0].n
-      value: 750
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 2580817076419603311, guid: 317ecff59300fc74ea6247621f9122f9,
         type: 3}
       propertyPath: vehicleTemplates.Array.data[0].prefab
       value: 
-      objectReference: {fileID: 6610698479731941720, guid: 8d5cfec472980fc4282732639b361bab,
+      objectReference: {fileID: 1434993275981048464, guid: 61af07437ea7e6d40b49a7516d90e2b1,
         type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 317ecff59300fc74ea6247621f9122f9, type: 3}

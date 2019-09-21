@@ -62,6 +62,7 @@ public class Vehicle : MonoBehaviour
                 sr.color = Color.green;
                 break;
         }
+        sensor.Randomize();
     }
 
     // Start is called before the first frame update
